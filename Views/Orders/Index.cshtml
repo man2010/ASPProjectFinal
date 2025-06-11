@@ -1,0 +1,63 @@
+﻿@model IEnumerable<ASPProjectFinal.Models.Order>
+
+@{
+    ViewData["Title"] = "Gestion des Commandes";
+}
+
+<div class="container mx-auto">
+    <div class="card animate-fade-in">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <h1>Gestion des Commandes Northwind</h1>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <form asp-action="Index" method="get" class="w-full md:w-1/2">
+                <div class="input-group">
+                    <input type="text" name="searchString" class="form-control" placeholder="Rechercher par ID commande ou client" value="@ViewData["CurrentFilter"]" />
+                    <button type="submit" class="btn btn-primary ms-2">Rechercher</button>
+                </div>
+            </form>
+            <a asp-action="Create" class="btn btn-success mt-4 md:mt-0">Ajouter Commande</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Commande</th>
+                        <th>Client</th>
+                        <th>Date Commande</th>
+                        <th>Pays Livraison</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr class="animate-fade-in">
+                            <td>@order.OrderId</td>
+                            <td>@order.CustomerId</td>
+                            <td>@order.OrderDate?.ToString("dd/MM/yyyy")</td>
+                            <td>@order.ShipCountry</td>
+                            <td class="space-x-2">
+                                <a asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-primary btn-sm">Détails</a>
+                                <a asp-action="Edit" asp-route-id="@order.OrderId" class="btn btn-secondary btn-sm">Modifier</a>
+                                <a asp-action="Delete" asp-route-id="@order.OrderId" class="btn btn-danger btn-sm">Supprimer</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

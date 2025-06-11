@@ -1,0 +1,88 @@
+﻿@model ASPProjectFinal.Models.Order
+
+@{
+    ViewData["Title"] = "Détails de la Commande";
+}
+
+<div class="container mx-auto">
+    <div class="card animate-fade-in">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <h1>Détails de la Commande @Model.OrderId</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-xl font-semibold text-yellow-400 mb-4">Informations Générales</h3>
+                <dl class="grid grid-cols-2 gap-4">
+                    <dt class="font-medium text-gray-300">ID Client</dt>
+                    <dd>@Model.CustomerId</dd>
+                    <dt class="font-medium text-gray-300">ID Employé</dt>
+                    <dd>@(Model.EmployeeId.HasValue ? Model.EmployeeId.ToString() : "Non spécifié")</dd>
+                    <dt class="font-medium text-gray-300">Date de Commande</dt>
+                    <dd>@Model.OrderDate?.ToString("dd/MM/yyyy")</dd>
+                    <dt class="font-medium text-gray-300">Date Requise</dt>
+                    <dd>@Model.RequiredDate?.ToString("dd/MM/yyyy")</dd>
+                    <dt class="font-medium text-gray-300">Date d'Expédition</dt>
+                    <dd>@Model.ShippedDate?.ToString("dd/MM/yyyy")</dd>
+                    <dt class="font-medium text-gray-300">Expéditeur</dt>
+                    <dd>@(Model.ShipVia.HasValue ? Model.ShipVia.ToString() : "Non spécifié")</dd>
+                    <dt class="font-medium text-gray-300">Frais de Transport</dt>
+                    <dd>@Model.Freight?.ToString("C")</dd>
+                    <dt class="font-medium text-gray-300">Nom de Livraison</dt>
+                    <dd>@Model.ShipName</dd>
+                    <dt class="font-medium text-gray-300">Adresse de Livraison</dt>
+                    <dd>@Model.ShipAddress</dd>
+                    <dt class="font-medium text-gray-300">Ville</dt>
+                    <dd>@Model.ShipCity</dd>
+                    <dt class="font-medium text-gray-300">Région</dt>
+                    <dd>@Model.ShipRegion</dd>
+                    <dt class="font-medium text-gray-300">Code Postal</dt>
+                    <dd>@Model.ShipPostalCode</dd>
+                    <dt class="font-medium text-gray-300">Pays</dt>
+                    <dd>@Model.ShipCountry</dd>
+                </dl>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-yellow-400 mb-4">Détails de la Commande</h3>
+                <div class="overflow-x-auto">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Quantité</th>
+                                <th>Prix Unitaire</th>
+                                <th>Remise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detail in Model.Order_Details)
+                            {
+                                <tr class="animate-fade-in">
+                                    <td>@detail.Product?.ProductName</td>
+                                    <td>@detail.Quantity</td>
+                                    <td>@detail.UnitPrice.ToString("C")</td>
+                                    <td>@(detail.Discount * 100)%</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end space-x-4 mt-6">
+            <a asp-action="Edit" asp-route-id="@Model.OrderId" class="btn btn-secondary">Modifier</a>
+            <a asp-action="Index" class="btn btn-primary">Retour</a>
+        </div>
+    </div>
+</div>

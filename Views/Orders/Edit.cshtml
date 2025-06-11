@@ -1,0 +1,279 @@
+﻿@model ASPProjectFinal.Models.Order
+
+@{
+    ViewBag.Title = "Modifier Commande";
+}
+
+<div class="container mx-auto">
+    <div class="card shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-primary mb-4">Modifier la Commande #@Model.OrderId</h1>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <form asp-action="Edit" method="post" id="orderForm" class="space-y-6">
+            <input type="hidden" asp-for="OrderId" />
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="text-lg font-semibold text-yellow-600 mb-3">Informations Générales</h3>
+                    <div class="mb-3">
+                        <label asp-for="CustomerId" class="form-label"></label>
+                        <select asp-for="CustomerId" class="form-select" name="CustomerId" required>
+                            <option value="">-- Sélectionner un client --</option>
+                            @foreach (var customer in ViewBag.Customers)
+                            {
+                                <option value="@customer.CustomerId" selected="@(customer.CustomerId == Model.CustomerId ? "selected" : null)">@customer.CustomerId - @customer.CompanyName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CustomerId" class="text-red-500 text-sm"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="EmployeeId" class="form-label"></label>
+                        <select asp-for="EmployeeId" class="form-select" name="EmployeeId">
+                            <option value="">-- Sélectionner un employé --</option>
+                            @foreach (var employee in ViewBag.Employees)
+                            {
+                                <option value="@employee.EmployeeId" selected="@(employee.EmployeeId == Model.EmployeeId ? "selected" : null)">@employee.FirstName @employee.LastName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OrderDate" class="form-label"></label>
+                        <input asp-for="OrderDate" class="form-control" type="date" name="OrderDate" required value="@(Model.OrderDate?.ToString("yyyy-MM-dd"))" />
+                        <span asp-validation-for="OrderDate" class="text-red-500 text-sm"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="RequiredDate" class="form-label"></label>
+                        <input asp-for="RequiredDate" class="form-control" type="date" name="RequiredDate" value="@(Model.RequiredDate?.ToString("yyyy-MM-dd"))" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShippedDate" class="form-label"></label>
+                        <input asp-for="ShippedDate" class="form-control" type="date" name="ShippedDate" value="@(Model.ShippedDate?.ToString("yyyy-MM-dd"))" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShipVia" class="form-label"></label>
+                        <select asp-for="ShipVia" class="form-select" name="ShipVia">
+                            <option value="">-- Sélectionner un expéditeur --</option>
+                            @foreach (var shipper in ViewBag.Shippers)
+                            {
+                                <option value="@shipper.ShipperId" selected="@(shipper.ShipperId == Model.ShipVia ? "selected" : null)">@shipper.CompanyName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Freight" class="form-label"></label>
+                        <input asp-for="Freight" class="form-control" type="number" step="0.01" min="0" name="Freight" value="@Model.Freight" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShipName" class="form-label"></label>
+                        <input asp-for="ShipName" class="form-control" name="ShipName" value="@Model.ShipName" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShipAddress" class="form-label"></label>
+                        <input asp-for="ShipAddress" class="form-control" name="ShipAddress" value="@Model.ShipAddress" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShipCity" class="form-label"></label>
+                        <input asp-for="ShipCity" class="form-control" name="ShipCity" value="@Model.ShipCity" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShipRegion" class="form-label"></label>
+                        <input asp-for="ShipRegion" class="form-control" name="ShipRegion" value="@Model.ShipRegion" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShipPostalCode" class="form-label"></label>
+                        <input asp-for="ShipPostalCode" class="form-control" name="ShipPostalCode" value="@Model.ShipPostalCode" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ShipCountry" class="form-label"></label>
+                        <input asp-for="ShipCountry" class="form-control" name="ShipCountry" value="@Model.ShipCountry" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="text-lg font-semibold text-yellow-600 mb-3">Détails de la Commande</h3>
+                    <div id="orderDetails" class="space-y-4">
+                        @{
+                            var index = 0;
+                            foreach (var detail in Model.Order_Details)
+                            {
+                                <div class="order-detail card p-4" data-index="@index">
+                                    <div class="mb-3">
+                                        <label class="form-label">Produit</label>
+                                        <select name="productIds[@index]" class="form-select" required>
+                                            <option value="">-- Sélectionner un produit --</option>
+                                            @foreach (var product in ViewBag.Products)
+                                            {
+                                                <option value="@product.ProductId" selected="@(product.ProductId == detail.ProductId ? "selected" : null)">@product.ProductName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Quantité</label>
+                                        <input name="quantities[@index]" class="form-control" type="number" min="1" required value="@detail.Quantity" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Prix Unitaire</label>
+                                        <input name="unitPrices[@index]" class="form-control" type="number" step="0.01" min="0" required value="@detail.UnitPrice" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Remise (%)</label>
+                                        <input name="discounts[@index]" class="form-control" type="number" step="0.01" min="0" max="100" required value="@(detail.Discount * 100)" />
+                                    </div>
+                                    <button type="button" class="btn btn-danger remove-detail">Supprimer</button>
+                                </div>
+                                index++;
+                            }
+                            if (!Model.Order_Details.Any())
+                            {
+                                <div class="order-detail card p-4" data-index="0">
+                                    <div class="mb-3">
+                                        <label class="form-label">Produit</label>
+                                        <select name="productIds[0]" class="form-select" required>
+                                            <option value="">-- Sélectionner un produit --</option>
+                                            @foreach (var product in ViewBag.Products)
+                                            {
+                                                <option value="@product.ProductId">@product.ProductName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Quantité</label>
+                                        <input name="quantities[0]" class="form-control" type="number" min="1" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Prix Unitaire</label>
+                                        <input name="unitPrices[0]" class="form-control" type="number" step="0.01" min="0" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Remise (%)</label>
+                                        <input name="discounts[0]" class="form-control" type="number" step="0.01" min="0" max="100" required />
+                                    </div>
+                                    <button type="button" class="btn btn-danger remove-detail">Supprimer</button>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <button type="button" id="addDetail" class="btn btn-success mt-4">Ajouter Détail</button>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-4">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#orderForm").validate({
+                errorClass: "text-red-500 text-sm",
+                rules: {
+                    CustomerId: { required: true },
+                    OrderDate: { required: true },
+                    "productIds[0]": { required: true },
+                    "quantities[0]": { required: true, min: 1 },
+                    "unitPrices[0]": { required: true, min: 0 },
+                    "discounts[0]": { required: true, min: 0, max: 100 }
+                },
+                messages: {
+                    CustomerId: "Veuillez sélectionner un client.",
+                    OrderDate: "Veuillez entrer une date valide.",
+                    "productIds[0]": "Veuillez sélectionner un produit.",
+                    "quantities[0]": "La quantité doit être positive.",
+                    "unitPrices[0]": "Le prix unitaire doit être non négatif.",
+                    "discounts[0]": "La remise doit être entre 0 et 100."
+                },
+                submitHandler: function (form) {
+                    // Normalize decimal separators to dot (.)
+                    $("input[name^='unitPrices']").each(function () {
+                        var value = $(this).val();
+                        if (value) {
+                            $(this).val(value.replace(',', '.'));
+                        }
+                    });
+                    $("input[name^='discounts']").each(function () {
+                        var value = $(this).val();
+                        if (value) {
+                            $(this).val(value.replace(',', '.'));
+                        }
+                    });
+                    $("input[name='Freight']").each(function () {
+                        var value = $(this).val();
+                        if (value) {
+                            $(this).val(value.replace(',', '.'));
+                        }
+                    });
+                    console.log("Form data:", $(form).serialize());
+                    form.submit();
+                }
+            });
+
+            $("#addDetail").click(function () {
+                var index = $("#orderDetails .order-detail").length;
+                var template = `
+                            <div class="order-detail card p-4" data-index="${index}">
+                                <div class="mb-3">
+                                    <label class="form-label">Produit</label>
+                                    <select name="productIds[${index}]" class="form-select" required>
+                                        <option value="">-- Sélectionner un produit --</option>
+        @foreach (var product in ViewBag.Products)
+        {
+                                                <option value="@product.ProductId">@product.ProductName</option>
+        }
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Quantité</label>
+                                    <input name="quantities[${index}]" class="form-control" type="number" min="1" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Prix Unitaire</label>
+                                    <input name="unitPrices[${index}]" class="form-control" type="number" step="0.01" min="0" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Remise (%)</label>
+                                    <input name="discounts[${index}]" class="form-control" type="number" step="0.01" min="0" max="100" required />
+                                </div>
+                                <button type="button" class="btn btn-danger remove-detail">Supprimer</button>
+                            </div>`;
+                $("#orderDetails").append(template);
+                $(`select[name='productIds[${index}]']`).rules("add", { required: true, messages: { required: "Veuillez sélectionner un produit." } });
+                $(`input[name='quantities[${index}]']`).rules("add", { required: true, min: 1, messages: { required: "La quantité est requise.", min: "La quantité doit être positive." } });
+                $(`input[name='unitPrices[${index}]']`).rules("add", { required: true, min: 0, messages: { required: "Le prix unitaire est requis.", min: "Le prix unitaire doit être non négatif." } });
+                $(`input[name='discounts[${index}]']`).rules("add", { required: true, min: 0, max: 100, messages: { required: "La remise est requise.", min: "La remise doit être non négative.", max: "La remise ne peut pas dépasser 100." } });
+            });
+
+            $(document).on("click", ".remove-detail", function () {
+                if ($("#orderDetails .order-detail").length > 1) {
+                    $(this).closest(".order-detail").remove();
+                    $("#orderDetails .order-detail").each(function (i) {
+                        $(this).attr("data-index", i);
+                        $(this).find("select").attr("name", `productIds[${i}]`);
+                        $(this).find("input:eq(0)").attr("name", `quantities[${i}]`);
+                        $(this).find("input:eq(1)").attr("name", `unitPrices[${i}]`);
+                        $(this).find("input:eq(2)").attr("name", `discounts[${i}]`);
+                        $(this).find("select").rules("add", { required: true });
+                        $(this).find("input:eq(0)").rules("add", { required: true, min: 1 });
+                        $(this).find("input:eq(1)").rules("add", { required: true, min: 0 });
+                        $(this).find("input:eq(2)").rules("add", { required: true, min: 0, max: 100 });
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,213 @@
+﻿@model ASPProjectFinal.Models.Order
+
+@{
+    ViewBag.Title = "Ajouter Commande";
+}
+
+<div class="container">
+    <h1>
+        Ajouter une Commande</h2>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+
+        <form asp-action="Create" method="post" id="createOrderForm">
+            <div class="form-group">
+                <h3>Informations Générales</h3>
+                <div class="form-group">
+                    <label asp-for="CustomerId"></label>
+                    <select asp-for="CustomerId" class="form-control" name="CustomerId" required>
+                        <option value="">-- Sélectionner un client --</option>
+                        @foreach (var customer in ViewBag.Customers)
+                        {
+                            <option value="@customer.CustomerId">@customer.CustomerId - @customer.CompanyName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EmployeeId"></label>
+                    <select asp-for="EmployeeId" class="form-control" name="EmployeeId">
+                        <option value="">-- Sélectionner un employé --</option>
+                        @foreach (var employee in ViewBag.Employees)
+                        {
+                            <option value="@employee.EmployeeId">@employee.FirstName @employee.LastName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="OrderDate"></label>
+                    <input asp-for="OrderDate" class="form-control" type="date" name="OrderDate" required />
+                    <span asp-validation-for="OrderDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RequiredDate"></label>
+                    <input asp-for="RequiredDate" class="form-control" type="date" name="RequiredDate" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShippedDate"></label>
+                    <input asp-for="ShippedDate" class="form-control" type="date" name="ShippedDate" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShipVia"></label>
+                    <select asp-for="ShipVia" class="form-control" name="ShipVia">
+                        <option value="">-- Sélectionner un expéditeur --</option>
+                        @foreach (var shipper in ViewBag.Shippers)
+                        {
+                            <option value="@shipper.ShipperId">@shipper.CompanyName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Freight"></label>
+                    <input asp-for="Freight" class="form-control" type="number" step="0.01" min="0" name="Freight" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShipName"></label>
+                    <input asp-for="ShipName" class="form-control" name="ShipName" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShipAddress"></label>
+                    <input asp-for="ShipAddress" class="form-control" name="ShipAddress" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShipCity"></label>
+                    <input asp-for="ShipCity" class="form-control" name="ShipCity" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShipRegion"></label>
+                    <input asp-for="ShipRegion" class="form-control" name="ShipRegion" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShipPostalCode"></label>
+                    <input asp-for="ShipPostalCode" class="form-control" name="ShipPostalCode" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShipCountry"></label>
+                    <input asp-for="ShipCountry" class="form-control" name="ShipCountry" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h3>Détails de la Commande</h3>
+                <div id="orderDetails">
+                    <div class="order-detail" data-index="0">
+                        <div class="form-group">
+                            <label>Produit</label>
+                            <select name="productIds[0]" class="form-control" required>
+                                <option value="">-- Sélectionner un produit --</option>
+                                @foreach (var product in ViewBag.Products)
+                                {
+                                    <option value="@product.ProductId">@product.ProductName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantité</label>
+                            <input name="quantities[0]" class="form-control" type="number" min="1" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Prix Unitaire</label>
+                            <input name="unitPrices[0]" class="form-control" type="number" step="0.01" min="0" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Remise (%)</label>
+                            <input name="discounts[0]" class="form-control" type="number" step="0.01" min="0" max="100" required />
+                        </div>
+                        <button type="button" class="btn btn-danger remove-detail">Supprimer</button>
+                    </div>
+                </div>
+                <button type="button" id="addDetail" class="btn btn-success">Ajouter Détail</button>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#createOrderForm").validate({
+                errorClass: "text-danger",
+                rules: {
+                    CustomerId: { required: true },
+                    OrderDate: { required: true },
+                    "productIds[0]": { required: true },
+                    "quantities[0]": { required: true, min: 1 },
+                    "unitPrices[0]": { required: true, min: 0 },
+                    "discounts[0]": { required: true, min: 0, max: 100 }
+                },
+                submitHandler: function (form) {
+                    // Normalize decimal separators to dot (.)
+                    $("input[name^='unitPrices']").each(function () {
+                        var value = $(this).val();
+                        if (value) {
+                            $(this).val(value.replace(',', '.'));
+                        }
+                    });
+                    $("input[name^='discounts']").each(function () {
+                        var value = $(this).val();
+                        if (value) {
+                            $(this).val(value.replace(',', '.'));
+                        }
+                    });
+                    $("input[name='Freight']").each(function () {
+                        var value = $(this).val();
+                        if (value) {
+                            $(this).val(value.replace(',', '.'));
+                        }
+                    });
+                    console.log("Form data:", $(form).serialize());
+                    form.submit();
+                }
+            });
+
+            $("#addDetail").click(function () {
+                var index = $("#orderDetails .order-detail").length;
+                var template = `
+                            <div class="order-detail" data-index="${index}">
+                                <div class="form-group">
+                                    <label>Produit</label>
+                                    <select name="productIds[${index}]" class="form-control" required>
+                                        <option value="">-- Sélectionner un produit --</option>
+        @foreach (var product in ViewBag.Products)
+        {
+                                                <option value="@product.ProductId">@product.ProductName</option>
+        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantité</label>
+                                    <input name="quantities[${index}]" class="form-control" type="number" min="1" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Prix Unitaire</label>
+                                    <input name="unitPrices[${index}]" class="form-control" type="number" step="0.01" min="0" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Remise (%)</label>
+                                    <input name="discounts[${index}]" class="form-control" type="number" step="0.01" min="0" max="100" required />
+                                </div>
+                                <button type="button" class="btn btn-danger remove-detail">Supprimer</button>
+                            </div>`;
+                $("#orderDetails").append(template);
+            });
+
+            $(document).on("click", ".remove-detail", function () {
+                if ($("#orderDetails .order-detail").length > 1) {
+                    $(this).closest(".order-detail").remove();
+                }
+            });
+        });
+    </script>
+}

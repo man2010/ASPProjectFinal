@@ -1,0 +1,163 @@
+/* General Styles */
+body {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1e3a8a, #1e40af, #000000);
+    color: #f3f4f6;
+    font-family: 'Poppins', sans-serif;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #facc15;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Table Styles */
+.table {
+    width: 100%;
+    color: #f3f4f6;
+    background: transparent;
+    border: none;
+}
+
+    .table thead th {
+        background: #3730a3;
+        color: #facc15;
+        border: none;
+        padding: 0.75rem;
+    }
+
+    .table tbody tr {
+        background: rgba(255, 255, 255, 0.05);
+        transition: background 0.3s ease;
+    }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+    .table tbody td {
+        border: none;
+        padding: 0.75rem;
+    }
+
+/* Button Styles */
+.btn-primary {
+    background: #facc15;
+    color: #1e3a8a;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background: #eab308;
+        transform: scale(1.05);
+    }
+
+.btn-secondary {
+    background: #4b5563;
+    color: #f3f4f6;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+    .btn-secondary:hover {
+        background: #374151;
+        transform: scale(1.05);
+    }
+
+.btn-danger {
+    background: #dc2626;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+    .btn-danger:hover {
+        background: #b91c1c;
+        transform: scale(1.05);
+    }
+
+.btn-success {
+    background: #16a34a;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+    .btn-success:hover {
+        background: #15803d;
+        transform: scale(1.05);
+    }
+
+/* Form Styles */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #f3f4f6;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #facc15;
+    }
+
+.form-label {
+    color: #d1d5db;
+    font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Card Effect */
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    transition: box-shadow 0.3s ease;
+}
+
+    .card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
